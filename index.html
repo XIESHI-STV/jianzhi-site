@@ -84,10 +84,13 @@
         .search-btn, .menu-btn {
             width: 24px;
             height: 24px;
-            margin-left: 20px;
             cursor: pointer;
             position: relative;
             z-index: 2;
+        }
+        
+        .menu-btn {
+            margin-left: 20px;
         }
         
         .search-container {
@@ -248,7 +251,6 @@
             <div class="search-container">
                 <div class="search-background"></div>
                 <div class="search-expanded">
-                    <img src="search-icon.png" alt="搜索" class="search-btn">
                     <input type="text" class="search-input" placeholder="在 简知 中搜索">
                 </div>
             </div>
@@ -290,7 +292,7 @@
             const splashScreen = document.querySelector('.splash-screen');
             const splashIcon = document.querySelector('.splash-icon');
             const splashText = document.querySelector('.splash-text');
-            const searchBtn = document.querySelector('.header-right .search-btn');
+            const searchBtn = document.querySelector('.search-btn');
             const menuBtn = document.querySelector('.menu-btn');
             const searchBackground = document.querySelector('.search-background');
             const searchExpanded = document.querySelector('.search-expanded');
@@ -298,8 +300,6 @@
             const menuOverlay = document.querySelector('.menu-overlay');
             const menuPanel = document.querySelector('.menu-panel');
             const carouselInner = document.querySelector('.carousel-inner');
-            const headerRightSearchBtn = document.querySelector('.header-right .search-btn');
-            const expandedSearchBtn = document.querySelector('.search-expanded .search-btn');
             
             setTimeout(() => {
                 splashIcon.style.transition = 'transform 0.8s ease';
@@ -317,7 +317,7 @@
                 }, 1000);
             }, 500);
             
-            headerRightSearchBtn.addEventListener('click', function(e) {
+            searchBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 if (searchExpanded.style.opacity === '1') return;
                 
@@ -325,14 +325,13 @@
                 searchBackground.style.width = '40px';
                 searchBackground.style.height = '40px';
                 
-                headerRightSearchBtn.style.transition = 'all 0.3s ease';
-                headerRightSearchBtn.style.opacity = '0';
+                searchBtn.style.transition = 'all 0.3s ease';
+                searchBtn.style.opacity = '0';
                 
                 setTimeout(() => {
                     searchBackground.style.width = '280px';
                     setTimeout(() => {
                         searchExpanded.style.opacity = '1';
-                        expandedSearchBtn.style.opacity = '1';
                         searchInput.style.width = '200px';
                         setTimeout(() => {
                             searchInput.focus();
@@ -342,17 +341,16 @@
             });
             
             document.addEventListener('click', function(e) {
-                if (!e.target.closest('.search-container') && !e.target.closest('.header-right .search-btn')) {
+                if (!e.target.closest('.search-container') && e.target !== searchBtn) {
                     if (searchExpanded.style.opacity === '1') {
                         searchExpanded.style.opacity = '0';
-                        expandedSearchBtn.style.opacity = '0';
                         searchInput.style.width = '0';
                         setTimeout(() => {
                             searchBackground.style.width = '40px';
                             searchBackground.style.height = '40px';
                             setTimeout(() => {
                                 searchBackground.style.opacity = '0';
-                                headerRightSearchBtn.style.opacity = '1';
+                                searchBtn.style.opacity = '1';
                             }, 200);
                         }, 200);
                     }
