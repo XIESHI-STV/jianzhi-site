@@ -232,6 +232,17 @@
             height: 100%;
             object-fit: cover;
         }
+
+        .search-icon-moved {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            z-index: 2;
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
@@ -251,6 +262,7 @@
             <div class="search-container">
                 <div class="search-background"></div>
                 <div class="search-expanded">
+                    <img src="search-icon.png" alt="搜索" class="search-icon-moved">
                     <input type="text" class="search-input" placeholder="在 简知 中搜索">
                 </div>
             </div>
@@ -300,6 +312,7 @@
             const menuOverlay = document.querySelector('.menu-overlay');
             const menuPanel = document.querySelector('.menu-panel');
             const carouselInner = document.querySelector('.carousel-inner');
+            const searchIconMoved = document.querySelector('.search-icon-moved');
             
             setTimeout(() => {
                 splashIcon.style.transition = 'transform 0.8s ease';
@@ -332,6 +345,7 @@
                     searchBackground.style.width = '280px';
                     setTimeout(() => {
                         searchExpanded.style.opacity = '1';
+                        searchIconMoved.style.opacity = '1';
                         searchInput.style.width = '200px';
                         setTimeout(() => {
                             searchInput.focus();
@@ -341,8 +355,79 @@
             });
             
             document.addEventListener('click', function(e) {
-                if (!e.target.closest('.search-container') && e.target !== searchBtn) {
+                if (!e.target.closest('.search-container') && e.target !== searchBtn && e.target !== searchIconMoved) {
                     if (searchExpanded.style.opacity === '1') {
+                        searchExpanded.style.opacity = '0';
+                        searchIconMoved.style.opacity = '0';
+                        searchInput.style.width = '0';
+                        setTimeout(() => {
+                            searchBackground.style.width = '40px';
+                            searchBackground.style.height = '40px';
+                            setTimeout(() => {
+                                searchBackground.style.opacity = '0';
+                                searchBtn.style.opacity = '1';
+                            }, 200);
+                        }, 200);
+                    }
+                }
+            });
+            
+            menuBtn.addEventListener('click', function() {
+                menuPanel.style.right = '0';
+                menuOverlay.style.opacity = '1';
+                menuOverlay.style.pointerEvents = 'auto';
+                document.body.style.overflow = 'hidden';
+            });
+            
+            menuOverlay.addEventListener('click', function() {
+                menuPanel.style.right = '-50%';
+                menuOverlay.style.opacity = '0';
+                menuOverlay.style.pointerEvents = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            let currentSlide = 0;
+            const slides = document.querySelectorAll('.carousel-item');
+            
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % slides.length;
+                carouselInner.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }
+            
+            setInterval(nextSlide, 3000);
+            
+            let startX = 0;
+            let currentX = 0;
+            let isDragging = false;
+            
+            carouselInner.addEventListener('touchstart', function(e) {
+                startX = e.touches[0].clientX;
+                isDragging = true;
+            });
+            
+            carouselInner.addEventListener('touchmove', function(e) {
+                if (!isDragging) return;
+                currentX = e.touches[0].clientX;
+                const diff = currentX - startX;
+                carouselInner.style.transform = `translateX(calc(-${currentSlide * 100}% + ${diff}px))`;
+            });
+            
+            carouselInner.addEventListener('touchend', function() {
+                isDragging = false;
+                const diff = currentX - startX;
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0 && currentSlide > 0) {
+                        currentSlide--;
+                    } else if (diff < 0 && currentSlide < slides.length - 1) {
+                        currentSlide++;
+                    }
+                }
+                carouselInner.style.transform = `translateX(-${currentSlide * 100}%)`;
+            });
+        });
+    </script>
+</body>
+</html>rchExpanded.style.opacity === '1') {
                         searchExpanded.style.opacity = '0';
                         searchInput.style.width = '0';
                         setTimeout(() => {
