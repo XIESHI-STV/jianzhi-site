@@ -78,6 +78,7 @@
         .header-right {
             display: flex;
             align-items: center;
+            position: relative;
         }
         
         .search-btn, .menu-btn {
@@ -85,25 +86,30 @@
             height: 24px;
             margin-left: 20px;
             cursor: pointer;
+            position: relative;
+            z-index: 2;
         }
         
         .search-container {
             position: absolute;
-            top: 100%;
-            right: 16px;
-            z-index: 101;
+            top: 50%;
+            right: 44px;
+            transform: translateY(-50%);
+            z-index: 1;
         }
         
         .search-background {
             position: absolute;
-            top: 8px;
+            top: 50%;
             right: 0;
+            transform: translateY(-50%);
             width: 40px;
             height: 40px;
             background: #f0f0f0;
             border-radius: 20px;
             opacity: 0;
             transition: all 0.3s ease;
+            z-index: 1;
         }
         
         .search-expanded {
@@ -113,6 +119,8 @@
             border-radius: 20px;
             padding: 8px 16px;
             opacity: 0;
+            position: relative;
+            z-index: 1;
         }
         
         .search-input {
@@ -123,13 +131,18 @@
             margin-left: 8px;
             width: 0;
             transition: width 0.3s ease;
+            color: #000;
+        }
+        
+        .search-input::placeholder {
+            color: #000;
         }
         
         .menu-panel {
             position: fixed;
             top: 0;
-            right: -100%;
-            width: 80%;
+            right: -50%;
+            width: 50%;
             height: 100%;
             background: white;
             z-index: 200;
@@ -232,15 +245,15 @@
             <div class="app-name">简知</div>
         </div>
         <div class="header-right">
+            <div class="search-container">
+                <div class="search-background"></div>
+                <div class="search-expanded">
+                    <img src="search-icon.png" alt="搜索" class="search-btn">
+                    <input type="text" class="search-input" placeholder="在 简知 中搜索">
+                </div>
+            </div>
             <img src="search-icon.png" alt="搜索" class="search-btn">
             <img src="menu-icon.png" alt="菜单" class="menu-btn">
-        </div>
-        <div class="search-container">
-            <div class="search-background"></div>
-            <div class="search-expanded">
-                <img src="search-icon.png" alt="搜索" class="search-btn">
-                <input type="text" class="search-input" placeholder="在 简知 中搜索">
-            </div>
         </div>
     </div>
 
@@ -285,6 +298,8 @@
             const menuOverlay = document.querySelector('.menu-overlay');
             const menuPanel = document.querySelector('.menu-panel');
             const carouselInner = document.querySelector('.carousel-inner');
+            const headerRightSearchBtn = document.querySelector('.header-right .search-btn');
+            const expandedSearchBtn = document.querySelector('.search-expanded .search-btn');
             
             setTimeout(() => {
                 splashIcon.style.transition = 'transform 0.8s ease';
@@ -302,7 +317,7 @@
                 }, 1000);
             }, 500);
             
-            searchBtn.addEventListener('click', function(e) {
+            headerRightSearchBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 if (searchExpanded.style.opacity === '1') return;
                 
@@ -310,10 +325,14 @@
                 searchBackground.style.width = '40px';
                 searchBackground.style.height = '40px';
                 
+                headerRightSearchBtn.style.transition = 'all 0.3s ease';
+                headerRightSearchBtn.style.opacity = '0';
+                
                 setTimeout(() => {
                     searchBackground.style.width = '280px';
                     setTimeout(() => {
                         searchExpanded.style.opacity = '1';
+                        expandedSearchBtn.style.opacity = '1';
                         searchInput.style.width = '200px';
                         setTimeout(() => {
                             searchInput.focus();
@@ -326,12 +345,14 @@
                 if (!e.target.closest('.search-container') && !e.target.closest('.header-right .search-btn')) {
                     if (searchExpanded.style.opacity === '1') {
                         searchExpanded.style.opacity = '0';
+                        expandedSearchBtn.style.opacity = '0';
                         searchInput.style.width = '0';
                         setTimeout(() => {
                             searchBackground.style.width = '40px';
                             searchBackground.style.height = '40px';
                             setTimeout(() => {
                                 searchBackground.style.opacity = '0';
+                                headerRightSearchBtn.style.opacity = '1';
                             }, 200);
                         }, 200);
                     }
@@ -346,7 +367,7 @@
             });
             
             menuOverlay.addEventListener('click', function() {
-                menuPanel.style.right = '-100%';
+                menuPanel.style.right = '-50%';
                 menuOverlay.style.opacity = '0';
                 menuOverlay.style.pointerEvents = 'none';
                 document.body.style.overflow = 'auto';
@@ -393,4 +414,4 @@
         });
     </script>
 </body>
-    </html>
+</html>
